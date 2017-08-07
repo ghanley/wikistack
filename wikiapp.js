@@ -8,7 +8,8 @@ var fs = require('fs');
 var path = require('path');
 var mime = require('mime');
 var bodyParser = require('body-parser');
-var socketio = require('socket.io');
+// var socketio = require('socket.io');
+var models = require('./models');
 
 // templating boilerplate setup
 app.engine('html', nunjucks.render); // how to render html templates
@@ -24,15 +25,18 @@ app.use(bodyParser.json()); // would be for AJAX requests
 
 
 // start the server
-var server = app.listen(1337, function(){
-  console.log('listening on port 1337');
-});
-var io = socketio.listen(server);
-
+models.db.sync({})
+  .then(function() {
+    app.listen(1337, function(){
+      console.log('listening on port 1337');
+    });
+  })
+  .catch(console.error);
+  
 app.use(express.static(path.join(__dirname, '/public')));
 
 // modular routing that uses io inside it
-app.use('/', makesRouter(io));
+app.use('/', makesRouter);
 
 // // manually-written static file middleware
 // app.use(function(req, res, next){

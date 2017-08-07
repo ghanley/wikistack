@@ -1,11 +1,6 @@
 'use strict';
-const express = require('express');
-const router = express.Router();
-const wikiRouter = require('./wiki');
-const userRouter = require('./user');
-
-router.use('/wiki', wikiRouter);
-router.use('/users', userRouter);
+var express = require('express');
+var router = express.Router();
 // var client = require('../db'); // remember automatically checks for index.js file by default
 
 // router.get('/', function(req, res, next) {
