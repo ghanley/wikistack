@@ -31,20 +31,20 @@ const Page = db.define('page', {
     date: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW
-    }
-    // getterMethods: {
-    //     route() {
-    //         return '/wiki/' + this.urlTitle.type;
-    //     }
-    // }
+    },
 }, {
     hooks: {
         beforeValidate: function(page) {
             page.urlTitle = generateUrlTitle(page.title);
         }
+    },
+    getterMethods: {
+        route() {
+            return '/wiki/' + this.urlTitle;
+        }
     }
 });
-    
+
 
 const User = db.define('user', {
     name: {
@@ -59,6 +59,9 @@ const User = db.define('user', {
         }
     }
 });
+
+Page.belongsTo(User, {as: 'author'});
+
 
 module.exports = {
     Page: Page,

@@ -25,7 +25,7 @@ app.use(bodyParser.json()); // would be for AJAX requests
 
 
 // start the server
-models.db.sync({})
+models.db.sync()
   .then(function() {
     app.listen(1337, function(){
       console.log('listening on port 1337');

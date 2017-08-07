@@ -7,17 +7,48 @@ var User = models.User;
 // var client = require('../db'); // remember automatically checks for index.js file by default
 
 router.get('/', function(req, res , next) {
-    res.redirect('/');
+    Page.findAll()
+    .then(function(result){
+        res.render('index', {pages: result});
+    })
 });
 
 router.post('/', function(req, res, next) {
+    
+    // var page = Page.build({
+    //     title: req.body.title,
+    //     content: req.body.content
+    // });
+
+    // User.findOrCreate({where: {name: req.body.name, email: req.body.email}}); 
+    // page.save().then(function(pageData) {
+    //     res.redirect(pageData.route);
+    // });
+    User.findOrCreate({
+        where: {
+            name: req.body.name,
+            email: req.body.email
+        }
+    })
+    .then(function (values) {
+
+    var user = values[0];
+
     var page = Page.build({
         title: req.body.title,
         content: req.body.content
+        });
+
+    return page.save()
+    .then(function (page) {
+        return page.setAuthor(user);
     });
-    page.save().then(function(pageData) {
-        res.redirect(`/wiki/${pageData.urlTitle}`);
-    });
+    })
+    .then(function (page) {
+    res.redirect(page.route);
+    })
+    .catch(next);
+
 });
 
 router.get('/add', function(req, res, next) {
@@ -31,8 +62,8 @@ router.get('/:urlTitle', function(req, res, next) {
         }
     })
     .then(function(queryResult) {
-        // res.json(queryResult);)
-        res.render('wikipage', {content: queryResult});
+        var authorUser = Page.getAuthor(queryResult.authorId);
+        res.render('wikipage', {content: queryResult, author: authorUser});
     })
     .catch(next);
 });
